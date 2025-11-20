@@ -10,7 +10,7 @@ from ae.dynamicod import try_eval                                               
 from ae.literal import Literal                                                              # type: ignore
 
 
-__version__ = '0.3.1'
+__version__ = '0.3.2'
 
 
 LOCK_EXT = '.locked'                                    #: additional file extension to block updates from templates
@@ -72,7 +72,7 @@ def deploy_destination_file_creator(file_path: str, new_content: Union[str, byte
     write_file(file_path, new_content, extra_mode=extra_mode, make_dirs=True)
 
 
-# pylint: disable-next=too-many-arguments,too-many-positional-arguments,too-many-locals,too-many-branches
+# pylint: disable=too-many-arguments,too-many-branches,too-many-locals,too-many-positional-arguments,too-many-statements
 def deploy_template(tpl_file_path: str, dst_path: str, patcher: str, tpl_vars: TplVars,
                     logger: Callable = print,
                     replacer: Optional[dict[str, Replacer]] = None,
@@ -108,6 +108,10 @@ def deploy_template(tpl_file_path: str, dst_path: str, patcher: str, tpl_vars: T
          * the outsourced project text does not contain the :data:`OUTSOURCED_MARKER` string.
 
     """
+    glo_vars = globals().copy()     # provide globals of this module, e.g., setup_kwargs_literal(), TEMPLATE_*, ...
+    glo_vars.update(tpl_vars)       # provide vars, e.g., PDV_COMMIT_MSG_FILE_NAME for .gitignore/index.rst templates
+    glo_vars['_add_base_globals'] = ""
+    tpl_vars = glo_vars
     if replacer is None:
         replacer = {}
     if dst_files is None:
@@ -189,7 +193,7 @@ def patch_string(content: str, tpl_vars: TplVars, **replacer: Replacer) -> str:
     """ replace f-string / dynamic placeholders in content with variable values / return values of replacer callables.
 
     :param content:             f-string to patch (e.g., a template file's content).
-    :param tpl_vars:            project env/dev vars dict with variables used as globals for f-string replacements.
+    :param tpl_vars:            dict with variables used as globals for f-string replacements.
     :param replacer:            optional kwargs dict with key/name=placeholder-id and value=replacer-callable.
                                 to specify additional replacer and also to overwrite or to deactivate the default
                                 template placeholder replacer specified in :data:`DEFAULT_TEMPLATE_PLACEHOLDERS`
@@ -198,11 +202,7 @@ def patch_string(content: str, tpl_vars: TplVars, **replacer: Replacer) -> str:
     :raises Exception:          if evaluation of :paramref;`~patch_string.content` f-string failed (because of
                                 missing-globals-NameError/SyntaxError/ValueError/...).
     """
-    glo_vars = globals().copy()     # provide globals of this module, e.g., setup_kwargs_literal(), TEMPLATE_*, ...
-    glo_vars.update(tpl_vars)       # provide vars, e.g., PDV_COMMIT_MSG_FILE_NAME for .gitignore/index.rst templates
-    glo_vars['_add_base_globals'] = ""
-
-    content = try_eval('f"""' + content.replace('"""', r'\"\"\"') + '"""', glo_vars=glo_vars)
+    content = try_eval('f"""' + content.replace('"""', r'\"\"\"') + '"""', glo_vars=tpl_vars)
     if not content:
         return ""
     content = content.replace(r'\"\"\"', '"""')     # recover docstring delimiters
@@ -222,7 +222,7 @@ def patch_string(content: str, tpl_vars: TplVars, **replacer: Replacer) -> str:
                 break
 
             end = content.find(suffix, beg)
-            assert end != -1, f"patch_string() {key=} placeholder args-{suffix=} is missing in {content=}; {glo_vars=}"
+            assert end != -1, f"patch_string() {key=} placeholder args-{suffix=} is missing in {content=}; {tpl_vars=}"
 
             replacement = fun(content[beg + len_pre: end])
             if isinstance(replacement, str):

@@ -25,13 +25,13 @@ setup_kwargs = {
     'license': 'GPL-3.0-or-later',
     'long_description': ('<!-- THIS FILE IS EXCLUSIVELY MAINTAINED by the project ae.ae v0.3.101 -->\n'
  '<!-- THIS FILE IS EXCLUSIVELY MAINTAINED by the project aedev.namespace_root_tpls v0.3.22 -->\n'
- '# template 0.3.1\n'
+ '# template 0.3.2\n'
  '\n'
  '[![GitLab develop](https://img.shields.io/gitlab/pipeline/ae-group/ae_template/develop?logo=python)](\n'
  '    https://gitlab.com/ae-group/ae_template)\n'
  '[![LatestPyPIrelease](\n'
- '    https://img.shields.io/gitlab/pipeline/ae-group/ae_template/release0.3.1?logo=python)](\n'
- '    https://gitlab.com/ae-group/ae_template/-/tree/release0.3.1)\n'
+ '    https://img.shields.io/gitlab/pipeline/ae-group/ae_template/release0.3.2?logo=python)](\n'
+ '    https://gitlab.com/ae-group/ae_template/-/tree/release0.3.2)\n'
  '[![PyPIVersions](https://img.shields.io/pypi/v/ae_template)](\n'
  '    https://pypi.org/project/ae-template/#history)\n'
  '\n'
@@ -108,7 +108,7 @@ setup_kwargs = {
         'Source': 'https://ae.readthedocs.io/en/latest/_modules/ae/template.html'},
     'python_requires': '>=3.9',
     'url': 'https://gitlab.com/ae-group/ae_template',
-    'version': '0.3.1',
+    'version': '0.3.2',
     'zip_safe': True,
 }
 

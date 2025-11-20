@@ -356,15 +356,14 @@ class TestHelpers:
 
         # code editor does allow comments with backslash at the end \
         tpl_content = textwrap.dedent('''\
-        # ReplaceWith#({'1st line  # with comment\\n' if tpl_var else ''})#
+        # ReplaceWith#({'1st line  # with comment' if tpl_var else ''})#
         # ReplaceWith#({'2nd line\\n' if tpl_var else ''})#''')
 
         patched = patch_string(tpl_content, {'tpl_var': True})
 
-        assert patched == "1st line  # with comment\n\n2nd line\n"
+        assert patched == "1st line  # with comment\n2nd line\n"
         assert patched == textwrap.dedent('''\
         1st line  # with comment
-        
         2nd line
         ''')
 
@@ -390,7 +389,7 @@ class TestHelpers:
         key3 = 'z quite long test dict key name, with z as first char to show on last line'
         val3 = "test dict value of long key name"
 
-        patched = patch_string(content, {'tst_dict': {key1: val1, key2: val2, key3: val3}})
+        patched = patch_string(content, {'os': os, 'tst_dict': {key1: val1, key2: val2, key3: val3}})
 
         assert key1 in patched
         assert val1 in patched
